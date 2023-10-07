@@ -1,0 +1,293 @@
+ auth emulator? 9099
+ firestore emulator? (8080)
+ storage emulator? (9199)
+  Emulator UI (leave empty to use any available port)? 3100
+#////////////////////////////////////////////////////////////
+adb :
+adb shell service list
+adb shell dumpsys package package.name | grep -A1 "Registered Activities"
+adb shell am start -a android.media.action.VIDEO_CAPTURE
+adb shell input keyevent KEYCODE_CAMERA
+adb shell su -c 'service call bluetooth_manager 6'
+adb shell am start -n com.example.myapp/com.example.myapp.MainActivity
+aapt dump xmltree app-debug.apk AndroidManifest.xml
+Device Information:
+
+adb devices: List all connected devices.
+adb shell getprop: Get properties of the device.
+adb shell wm size: Get the screen size.
+adb shell wm density: Get the screen density.
+App Management:
+
+adb install path/to/app.apk: Install an app.
+adb uninstall package.name: Uninstall an app.
+adb shell pm list packages: List all installed packages.
+adb shell am start -n package.name/ActivityName: Launch an app by specifying the package name and activity name.
+adb shell am force-stop package.name: Force-stop an app.
+File Operations:
+
+adb push source destination: Copy a file or directory from your computer to the device.
+adb pull source destination: Copy a file or directory from the device to your computer.
+adb shell ls path: List files and directories on the device.
+adb shell rm path: Remove a file or directory on the device.
+adb shell mv oldpath newpath: Move or rename a file or directory on the device.
+Screen Capture and Recording:
+
+adb shell screencap /sdcard/screenshot.png: Capture a screenshot.
+adb pull /sdcard/screenshot.png: Pull the screenshot to your computer.
+adb shell screenrecord /sdcard/record.mp4: Record the screen.
+adb pull /sdcard/record.mp4: Pull the recording to your computer.
+Logcat and Debugging:
+
+adb logcat: Display device logs (debugging information).
+adb logcat -d > filename.txt: Save logs to a file.
+adb logcat -c: Clear the logs.
+adb shell dumpsys: Dump various system information.
+Networking and Port Forwarding:
+
+adb forward tcp:localport tcp:deviceport: Forward a local port to a device port.
+adb reverse tcp:deviceport tcp:localport: Reverse a device port to a local port.
+adb shell ifconfig: Get network interfaces and IP addresses.
+Miscellaneous:
+
+adb reboot: Reboot the device.
+adb reboot recovery: Reboot to recovery mode.
+adb reboot bootloader: Reboot to bootloader mode.
+adb backup -f backup.ab -apk -all: Create a backup of apps and data.
+adb devices: List all connected devices.
+adb connect device-ip:port: Connect to a device over a network.
+adb disconnect device-ip:port: Disconnect from a device over a network.
+adb reboot: Reboot the device.
+adb reboot recovery: Reboot to recovery mode.
+adb reboot bootloader: Reboot to bootloader mode.
+adb shell reboot -p: Power off the device.
+Device Information:
+
+adb shell getprop: Get device properties.
+adb shell dumpsys: Dump various system information.
+adb shell cat /proc/cpuinfo: Display CPU information.
+Screen Interaction:
+
+adb shell input keyevent KEYCODE: Simulate a key press event. Replace KEYCODE with the desired key code.
+adb shell input tap x y: Simulate a touch event at coordinates (x, y).
+adb shell input swipe x1 y1 x2 y2: Simulate a swipe gesture from (x1, y1) to (x2, y2).
+App Management:
+
+adb install path/to/app.apk: Install an app.
+adb uninstall package.name: Uninstall an app.
+adb shell pm list packages: List all installed packages.
+adb shell pm clear package.name: Clear app data and cache.
+adb shell am force-stop package.name: Force-stop an app.
+adb shell am start -n package.name/activity.name: Launch an activity.
+adb shell am start -a action: Start an app by action (e.g., android.intent.action.MAIN).
+File Operations:
+
+adb push source destination: Copy files from your computer to the device.
+adb pull source destination: Copy files from the device to your computer.
+adb shell ls path: List files and directories on the device.
+adb shell rm path: Remove a file or directory on the device.
+Logcat and Debugging:
+
+adb logcat: Display device logs (debugging information).
+adb logcat -d > filename.txt: Save logs to a file.
+adb logcat -c: Clear the logs.
+adb bugreport: Generate a bug report on the device.
+Networking and Port Forwarding:
+
+adb forward tcp:localport tcp:deviceport: Forward a local port to a device port.
+adb reverse tcp:deviceport tcp:localport: Reverse a device port to a local port.
+adb shell netstat: Display network statistics.
+Screen Capture and Recording:
+
+adb shell screencap /sdcard/screenshot.png: Capture a screenshot.
+adb pull /sdcard/screenshot.png: Pull the screenshot to your computer.
+adb shell screenrecord /sdcard/record.mp4: Record the screen.
+adb pull /sdcard/record.mp4: Pull the recording to your computer.
+
+#////////////////////////////////////////////////////////////
+Certainly! You can use the GetX package to manage state and handle the timer without using Provider. Here's how you can achieve this:
+
+Add the get package to your pubspec.yaml:
+yaml
+Copy code
+dependencies:
+  flutter:
+    sdk: flutter
+  get: ^4.6.1  # Use the latest version of GetX
+Create a controller to manage the timer state:
+dart
+Copy code
+import 'dart:async';
+import 'package:get/get.dart';
+
+class CountdownController extends GetxController {
+  late Timer _timer;
+  Rx<Duration> _remainingTime = Rx<Duration>(Duration.zero);
+
+  Duration get remainingTime => _remainingTime.value;
+
+  CountdownController(Duration duration) {
+    _remainingTime.value = duration;
+    startTimer();
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_remainingTime.value.inSeconds > 0) {
+        _remainingTime.value = _remainingTime.value - Duration(seconds: 1);
+      } else {
+        _timer.cancel();
+        // You can add any logic here for when the countdown finishes.
+      }
+    });
+  }
+
+  void restart(Duration duration) {
+    _timer.cancel();
+    _remainingTime.value = duration;
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+}
+Initialize and use the controller in your app:
+dart
+Copy code
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  final CountdownController _countdownController = CountdownController(Duration(minutes: 1));
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      title: 'Countdown Timer Example',
+      home: Scaffold(
+        appBar: AppBar(title: Text('Countdown Timer Example')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GetX<CountdownController>(
+                init: _countdownController,
+                builder: (controller) {
+                  String minutes = (controller.remainingTime.inMinutes % 60).toString().padLeft(2, '0');
+                  String seconds = (controller.remainingTime.inSeconds % 60).toString().padLeft(2, '0');
+
+                  return Column(
+                    children: [
+                      Text(
+                        '$minutes:$seconds',
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Restart the timer with a new duration (e.g., 2 minutes)
+                          controller.restart(Duration(minutes: 2));
+                        },
+                        child: Text('Restart Timer'),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+#////////////////////////////////////////////////////////////
+https://www.kaggle.com/datasets
+https://research.google/resources/datasets/?type=image
+https://towardsdatascience.com/5-websites-to-download-pre-trained-machine-learning-models-6d136d58f4e7
+https://github.com/tensorflow/models/tree/master/official
+https://pub.dev/packages/flutter_shortcuts
+https://codelabs.developers.google.com/flutter-home-screen-widgets#5
+https://pub.dev/packages/elastic_drawer
+https://pub.dev/packages/sidebarx
+https://pub.dev/packages/sliver_app_bar_builder
+https://pub.dev/packages/fade_scroll_app_bar
+https://pub.dev/packages/concentric_transition
+https://pub.dev/packages/circular_clip_route
+https://pub.dev/packages/floating_tabbar
+https://pub.dev/packages/motion_tab_bar_v2
+https://github.com/coqui-ai/TTS
+https://pub.dev/packages/avatar_brick
+https://flutterawesome.com/a-flutter-widget-to-simplify-design-implementations/
+https://github.com/Abedalkareem/simple_widget?ref=flutterawesome.com
+https://theresanaiforthat.com/s/extend+image/
+https://velocityx.dev/
+https://pub.dev/packages/fluent_ui
+https://editor.fusionbrain.ai/
+https://flutterawesome.com/footage-write-videos-in-flutter/
+https://app.dhiwise.com/dashboard
+https://www.javatpoint.com/flutter-navigation-and-routing
+https://github.com/dengyin2000/dynamic_widget
+https://pub.dev/packages?q=icons&page=2
+https://pub.dev/documentation/dio/latest/dio/Dio/download.html
+https://pub.dev/packages/share_plus
+https://pub.dev/packages/diagram_editor
+https://github.com/rajeshbdabhi/easy_image_editor
+https://github.com/hsbijarniya/image_editor_plus
+https://pub.dev/packages/image_editor_plus
+https://firebase.flutter.dev/docs/firestore-odm/overview/
+https://github.com/LeGoffMael/video_editor/blob/master/lib/src/controller.dart
+https://kauemurakami.github.io/getx_pattern/
+https://github.com/LeGoffMael/video_editor
+https://github.com/jonataslaw/getx/issues/2879
+https://github.com/hsbijarniya/image_editor_plus
+https://github.com/LeGoffMael/video_editor/blob/master/lib/src/widgets/transform.dart
+https://pub.dev/packages/sticky_grouped_list/example
+https://docs.flame-engine.org/latest/bridge_packages/flame_forge2d/joints.html
+https://github.com/peng8350/flutter_pulltorefresh/tree/master
+https://github.com/robert-luoqing/chat_list/blob/master/lib/src/step_timetag_util.dart
+https://pub.dev/packages?q=styled
+https://pub.dev/documentation/flutter_chat_ui/latest/flutter_chat_ui/flutter_chat_ui-library.html
+https://pub.dev/documentation/flutter_chat_types/latest/flutter_chat_types/VideoMessage-class.html
+https://github.com/SimformSolutionsPvtLtd/flutter_chatview/tree/main/lib/src
+https://pub.dev/packages/ffmpeg_kit_flutter
+https://pub.dev/packages/phosphor_flutter/example
+https://pub.dev/packages/pdf_image_renderer
+https://pub.dev/packages/grouped_list
+https://pub.dev/packages/easy_search_bar
+https://pub.dev/packages/mesh_gradient
+https://pub.dev/packages/get
+https://github.com/Harsh-Radadiya/sticker_editor/tree/master
+https://flutterawesome.com/tag/onboarding/
+https://firebase.google.com/docs/auth/admin/custom-claims
+https://www.flutterbeads.com/flutter-countdown-timer/#google_vignette
+https://flutterawesome.com/whatsapp-clone-built-using-the-integration-of-flutter-and-firebase/
+https://github.com/ashima-09/whatsapp_clone/tree/master/lib/feature/chat/controller
+
+
+https://reactjsexample.com/instagram-app-clone-built-with-react-native-and-firebase/
+https://www.zegocloud.com/docs
+https://docs.zegocloud.com/article/14737
+https://github.com/topics/dashboard-templates?l=html&o=desc&s=forks
+https://blog.openreplay.com/implementing-otp-phone-number-authentication-in-react-native/
+https://github.com/expo/fyi/blob/main/first-android-submission.md
+https://docs.expo.dev/app-signing/app-credentials/
+https://github.com/expo/fyi/tree/main
+https://expo.dev/accounts/jadeja5645/projects/octoria/builds/705938cb-0551-4f28-b4bd-eeecf501fa18
+https://tinypng.com/
+https://react-native-share.github.io/react-native-share/docs/share-open
+https://www.remove.bg/upload
+https://www.svgrepo.com/svg/491110/qr
+https://tailwindcss.com/docs/customizing-colors
+
+//***********************************************************************************************************
+https://telegram.org/apps#source-code

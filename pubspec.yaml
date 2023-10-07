@@ -1,0 +1,44 @@
+name: ibaismedia
+version: 1.0.0+1
+publish_to: none
+description: A new Flutter project.
+environment: 
+  sdk: '>=3.0.6 <4.0.0'
+
+dependencies: 
+  cupertino_icons: ^1.0.2
+  get: 4.6.5
+  get_storage: ^2.1.1
+  firebase_core: ^2.15.1
+  firebase_auth: ^4.8.0
+  firebase_storage: ^11.2.6
+  cloud_firestore: ^4.9.0
+  async: ^2.11.0
+  phone_form_field: ^8.1.0
+  convex_bottom_bar: ^3.2.0
+  curved_drawer_fork: ^0.0.1+1
+  easy_search_bar: ^2.5.0
+  flutter_swiper_null_safety: ^1.0.2
+  flutter_custom_clippers: ^2.1.0
+  cached_network_image: ^3.2.3
+  fast_cached_network_image: ^1.2.0
+  path_provider: ^2.1.1
+  carousel_slider: 4.2.1
+  flutter: 
+    sdk: flutter
+  http: ^1.1.0
+  google_fonts: ^5.1.0
+  widget_mask: ^1.0.0+0
+  streaming_shared_preferences: ^2.0.0
+
+dev_dependencies: 
+  flutter_lints: ^2.0.0
+  flutter_test: 
+    sdk: flutter
+
+flutter: 
+  assets: 
+    - assets/images/placeholder.png
+    - assets/images/texture1.png
+  uses-material-design: true
+
